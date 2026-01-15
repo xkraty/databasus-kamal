@@ -1,0 +1,6 @@
+servers:
+  web:
+    - databasus.yourdomain.com
+
+proxy:
+  host: databasus.yourdomain.com

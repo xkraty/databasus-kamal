@@ -1,0 +1,29 @@
+name: Deploy
+
+permissions:
+  packages: write
+  contents: read
+
+on:
+  release:
+    types: [published]
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: production_deploy
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          KAMAL_REGISTRY_USERNAME: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
+          KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
