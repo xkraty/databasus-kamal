@@ -10,20 +10,31 @@ on:
   schedule:
     - cron: "0 7 * * *"
   workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy
+        required: true
+        default: "production"
+        type: choice
+        options:
+          - production
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: ${{ github.event.inputs.environment || 'production' }}
     concurrency:
-      group: production_deploy
+      group: deploy_${{ github.event.inputs.environment || 'production' }}
       cancel-in-progress: true
+    env:
+      KAMAL_REGISTRY_USERNAME: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
+      KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - name: Deploy
         uses: ./.github/actions/deploy
         with:
-          KAMAL_REGISTRY_USERNAME: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
-          KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+          ENVIRONMENT: ${{ github.event.inputs.environment || 'production' }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
