@@ -7,8 +7,9 @@ permissions:
 on:
   release:
     types: [published]
-  schedule:
-    - cron: "0 7 * * *"
+  # Uncomment to enable scheduled daily deployments (pulls latest Databasus image)
+  # schedule:
+  #   - cron: "0 7 * * *"
   workflow_dispatch:
     inputs:
       environment:
